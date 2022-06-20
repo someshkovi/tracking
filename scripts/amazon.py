@@ -40,9 +40,17 @@ def get_amazon_results_by_search(search_parameter, no_of_pages=20):
 def get_amazon_product_info(url):
     page = requests.get(url, verify=False)
     soup = bs(page.content, features='lxml')
+    req_soup = soup.find(id='centerCol')
     try:
-        name = soup.find(id='productTitle').get_text().strip()
-        price_str = soup.find(id='tp_price_block_total_price_ww').get_text()
+        name = req_soup.find(id='productTitle').get_text().strip()
+        price_str = req_soup.find('span', attrs={'class': 'a-price a-text-price a-size-medium apexPriceToPay'}
+                                  ).find('span', attrs={'class': 'a-offscreen'}).get_text()
+        rating = req_soup.find('span', attrs={'class': 'a-icon-alt'})
+        if rating is not None:
+            rating = rating.get_text()
+        ratings_count = req_soup.find(id='acrCustomerReviewText')
+        if ratings_count is not None:
+            ratings_count = ratings_count.get_text()
     except Exception as e:
         error_msg = f'exception in getting product info = {e}'
         return {
@@ -66,6 +74,8 @@ def get_amazon_product_info(url):
         price = unicodedata.normalize('NFKD', price_str)
         price = price.split('.')[0].replace(',', '').replace('₹', '')
         price = float(price)
+        rating = float(rating.split(' ')[0])
+        ratings_count = int(req_soup.find(id='acrCustomerReviewText').get_text().replace(',','').split(' ')[0])
     except Exception as e:
         error_msg = f'exception in getting product info = {e}'
         return {
@@ -78,7 +88,9 @@ def get_amazon_product_info(url):
         'name': name,
         'price': price,
         'availability': available,
-        'availability_message': availability_message
+        'availability_message': availability_message,
+        'rating': rating,
+        'ratings_count': ratings_count,
     }
     return {
         'status': 'success',

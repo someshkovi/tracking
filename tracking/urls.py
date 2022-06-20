@@ -28,8 +28,8 @@ def index(request):
 from accounts.views import SignUpView
 
 urlpatterns = [
-    path("signup/", SignUpView.as_view(), name="signup"),
-    path("", include("django.contrib.auth.urls")),
+    path("accounts/signup/", SignUpView.as_view(), name="signup"),
+    path("accounts/", include("django.contrib.auth.urls")),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('exercise/', include('exercise.urls')),

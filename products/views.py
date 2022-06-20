@@ -6,6 +6,7 @@ from django.views.generic import ListView, DetailView
 from django.utils import timezone
 from django.contrib import messages
 from django.views.generic.edit import FormMixin, UpdateView, DeleteView
+from django.contrib.auth.decorators import login_required
 
 from products.models import Product, ProductCategory
 from products.forms import ProductForm, ProductCustomForm
@@ -13,8 +14,9 @@ from scripts.fetch_data import store_update_price
 from django.db.models import F
 
 
+@login_required
 def index(request):
-    products_with_below_targe_price = Product.objects.filter(user=request.user).filter(target_price__isnull=False).filter(price__lte=F('price'))
+    products_with_below_targe_price = Product.objects.filter(user=request.user).filter(target_price__isnull=False).filter(target_price__gte=F('price'))
     products_at_min_price = Product.objects.filter(user=request.user).filter(
         price__isnull=False).filter(min_price__isnull=False).filter(
         max_price__isnull=False).filter(min_price__lt=F('max_price'))
@@ -30,8 +32,9 @@ def index(request):
             form.instance.user = request.user
             if form.instance.url is not None:
                 response = json.loads(store_update_price(form.instance.url))
-                if response.get('price') is not None:
-                    form.instance.price = response.get('price')
+                for val in ['price', 'rating', 'reviews_count', 'ratings_count', 'availability', 'availability_message']:
+                    if response.get(val) is not None:
+                        setattr(form.instance, val, response.get(val))
                 form.instance.is_url_valid = response.get('is_url_valid')
             form.save()
             messages.success(request, f"{form.instance.name} successfully added")
@@ -90,4 +93,4 @@ class ProductUpdateView(UpdateView):
 
 class ProductDeleteView(DeleteView):
     model = Product
-    success_url = reverse_lazy('products:products-list')
+    success_url = reverse_lazy('products:index')

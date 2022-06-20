@@ -44,21 +44,24 @@ def get_products() -> dict:
     else:
         return {
             'status': Constants.FAILURE,
-            'data': response
+            'data': get_response
         }
 
 
 def test():
-    response = get_products()
-    if response['status'] == Constants.SUCCESS:
-        products = response['data']
-        print(products)
-
-    response = add_product({'name': 'another product', 'price': 101})
-    print(response.json())
-
-    response = update_product_data(response.json()['data']['id'], {'name': 'modified_product'})
-    print(response.json())
+    # response = get_products()
+    # if response['status'] == Constants.SUCCESS:
+    #     products = response['data']
+    #     print(products)
+    #
+    # response = add_product({'name': 'another product', 'price': 101})
+    # print(response.json())
+    #
+    # response = update_product_data(response.json()['data']['id'], {'name': 'modified_product'})
+    # print(response.json())
+    response = get_amazon_product_info(input('url'))
+    print(response)
+    pass
 
 
 if __name__ == '__main__':
