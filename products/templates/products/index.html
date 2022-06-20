@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{#{% crispy example_form example_form.helper %}#}
+{% load static %}
+{% block title %} Tracking {% endblock %}
+{% block stylesheets %}
+{#    <style>#}
+{#        td.prod {#}
+{#            text-align: center;#}
+{#            colspan: 6;#}
+{#        }#}
+{#    </style>#}
+{% endblock stylesheets %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <h3>View all products</h3>
+    </div>
+    <div class="row">
+        <button onclick="myFunction()" class="btn btn-primary btn-lg btn-block" id="addbutton">Add new products for tracking</button>
+        <div class="col-12 col-md-6">
+            <div id="productaddform" style="display: none;">
+                <form action="" method="post">
+                  {% csrf_token %}
+                  {{ form|crispy }}
+                    </br>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button onclick="myFunction()" type="submit" class="btn btn-primary">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("productaddform");
+  var y = document.getElementById("addbutton")
+  if (x.style.display === "none") {
+    x.style.display = "block";
+    y.style.display = "none";
+  } else {
+    x.style.display = "none";
+    y.style.display = "block";
+  }
+}
+</script>
+</br>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8">
+            <div class="table-responsive row">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Lowest Price</th>
+                      <th scope="col">Target Price</th>
+                      <th scope="col">Rating</th>
+                      <th scope="col">Availability Message</th>
+                      {% comment %} <th scope="col">Update Data</th> {% endcomment %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% if products_with_below_targe_price %}
+                            <tr>
+                                <td colspan="7" style="text-align: center">Products below Target price</td>
+                            </tr>
+                            {% for product in products_with_below_targe_price %}
+                              <tr>
+                                  <th scope="row">{{ product.id }}</th>
+                                  <td><a href={{product.get_absolute_url}}>{{ product.name }}</a></td>
+                                  {% if product.price %}
+                                    <td>{{ product.price }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                                  {% if product.min_price %}
+                                    <td>{{ product.min_price }}</td>
+                                  {% else %}
+                                    <td></td>
+                                  {% endif %}
+                                  {% if product.target_price %}
+                                    <td>{{ product.target_price }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                                  {% if product.rating %}
+                                    <td>{{ product.rating }}</td>
+                                  {% else %}
+                                    <td></td>
+                                  {% endif %}
+                                  {% if product.availability_message %}
+                                    <td>{{ product.availability_message }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                              </tr>
+                          {% endfor %}
+                        {% else %}
+                            <tr>
+                            <td colspan="7" style="text-align: center">No Products are below Target price</td>
+                            </tr>
+                        {% endif %}
+                        {% if products_at_min_price %}
+                            <tr>
+                                <td colspan="7" style="text-align: center">Products at min price</td>
+                            </tr>
+                            {% for product in products_at_min_price %}
+                              <tr>
+                                  <th scope="row">{{ product.id }}</th>
+                                  <td><a href={{product.get_absolute_url}}>{{ product.name }}</a></td>
+                                  {% if product.price %}
+                                    <td>{{ product.price }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                                  {% if product.min_price %}
+                                    <td>{{ product.min_price }}</td>
+                                  {% else %}
+                                    <td></td>
+                                  {% endif %}
+                                  {% if product.target_price %}
+                                    <td>{{ product.target_price }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                                  {% if product.rating %}
+                                    <td>{{ product.rating }}</td>
+                                  {% else %}
+                                    <td></td>
+                                  {% endif %}
+                                  {% if product.availability_message %}
+                                    <td>{{ product.availability_message }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                              </tr>
+                          {% endfor %}
+                        {% else %}
+                            <tr>
+                            <td colspan="7" style="text-align: center">No Products at min price</td>
+                            </tr>
+                        {% endif %}
+                        {% if other_products %}
+                            <tr>
+                                <td colspan="7" style="text-align: center">Other products</td>
+                            </tr>
+                            {% for product in other_products %}
+                              <tr>
+                                  <th scope="row">{{ product.id }}</th>
+                                  <td><a href={{product.get_absolute_url}}>{{ product.name }}</a></td>
+                                  {% if product.price %}
+                                    <td>{{ product.price }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                                  {% if product.min_price %}
+                                    <td>{{ product.min_price }}</td>
+                                  {% else %}
+                                    <td></td>
+                                  {% endif %}
+                                  {% if product.target_price %}
+                                    <td>{{ product.target_price }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                                  {% if product.rating %}
+                                    <td>{{ product.rating }}</td>
+                                  {% else %}
+                                    <td></td>
+                                  {% endif %}
+                                  {% if product.availability_message %}
+                                    <td>{{ product.availability_message }}</td>
+                                  {% else %}
+                                  <td></td>
+                                  {% endif %}
+                              </tr>
+                          {% endfor %}
+                        {% endif %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+        {% if products_with_invalid_url %}
+            <div class="col-12 col-md-4">
+            <h3>Products with invalid url</h3>
+                {% for product in products_with_invalid_url %}
+                    <li>
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                    </li>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+      <div clas="col-4">
+        <p>by categories</p>
+        <ul>
+          {% for item in categories %}
+            <li><a href = '/products/category:{{item.id}}'>{{ item }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-1"></div>
+      <div clas="col-4">
+        <p>by search results</p>
+        <ul>
+          {% for item in products_search_result_keywords %}
+            <li><a href = '/products/search:{{item}}'>{{ item }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+</div>
+
+{% endblock content %}

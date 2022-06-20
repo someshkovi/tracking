@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+<h1>Exercises</h1>
+    {% if request.user.is_authenticated %}
+        <ul>
+        {% for exercisetracker in object_list %}
+            <a href={{ exercisetracker.get_absolute_url }}><li>{{ exercisetracker.exercise }} - {{ exercisetracker.time_stamp|date }} </li></a>
+        {% empty %}
+            <li>No exercises yet.</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <h6>Login to track exercises</h6>
+    {% endif %}
+{% endblock content %}

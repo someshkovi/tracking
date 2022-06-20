@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+<h1>Exercises</h1>
+<ul>
+    {% for exercise in object_list %}
+    {#    <li>{{ exercise.time|date }} - {{ exercise.headline }}</li>#}
+        <a href={{ exercise.get_absolute_url }}><li>{{ exercise.primary_body_part }} - {{ exercise.name }}</li></a>
+    {% empty %}
+        <li>No exercises yet.</li>
+    {% endfor %}
+    </ul>
+{% endblock content %}

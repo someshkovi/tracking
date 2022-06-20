@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+<h1>{{ object.name }}</h1>
+<p>{{ object.exercise }}</p>
+<p>Body Part: {{ object.exercise.primary_body_part }}</p>
+<p>Published: {{ object.time_stamp }}</p>
+<p>Date: {{ now|date }}</p>
+{% endblock content %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Product detail {% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-8">
+                <h1>{{ object.name }}</h1>
+                <a href="{{ product.get_edit_url }}" class="btn btn-primary active" role="button" aria-pressed="true">Edit</a>
+                <a href="{{ product.get_absolute_url }}delete/" class="btn btn-primary active" role="button" aria-pressed="true">Delete</a>
+                <a href="{% url 'products:index' %}" class="btn btn-primary active" role="button" aria-pressed="true">Back</a>
+                {% if object.url %}
+                    {% if not object.is_url_valid %}
+                        <div class="alert alert-danger" role="alert"> Invalid Url / Unable to fetch data</div>
+                    {% endif %}
+                    <a href="{{ object.url }}"><p>{{ object.url }}</p></a>
+                {% else %}
+                    <p><div class="alert alert-danger" role="alert">Url not added</div></p>
+                {% endif %}
+                {% if object.availability %}
+                    <div class="alert alert-success" role="alert">Available {% if object.availability_message %}- {{ object.availability_message }}{% endif %}</div>
+                {% else %}
+                    <div class="alert alert-info" role="alert">Not Available {% if object.availability_message %}- {{ object.availability_message }}{% endif %}</div>
+                {% endif %}
+                <p>Website : {{ object.site }}</p>
+                <p>price : {{ object.price }}</p>
+                <p>max_price: {{ object.max_price }}</p>
+                <p>min_price : {{ object.min_price }}</p>
+                <p>target_price : {{ object.target_price }}</p>
+                <p>rating : {{ object.rating }}</p>
+                {% if request.user.is_superuser %}
+                    <p>User: {{ object.user }}</p>
+                {% endif %}
+
+                <p>Added Date: {{ object.created|date }}</p>
+                <p>Last Updated: {{ object.updated|timesince }} ago</p>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
