@@ -13,12 +13,12 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">api</a>
                         <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item">Inbox</a>
-                            <a href="#" class="dropdown-item">Sent</a>
-                            <a href="#" class="dropdown-item">Drafts</a>
+                            <a href="{% url 'schema-swagger-ui' %}" class="dropdown-item">swagger</a>
+                            <a href="{% url 'schema-redoc' %}" class="dropdown-item">redoc</a>
+                            <a href="#" class="dropdown-item">docs</a>
                         </div>
                     </div>
-                    <a href="#" class="nav-item nav-link disabled" tabindex="-1">Reports</a>
+                    <a href="/admin" class="nav-item nav-link" tabindex="-1">Admin</a>
                 </div>
                 <div class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}

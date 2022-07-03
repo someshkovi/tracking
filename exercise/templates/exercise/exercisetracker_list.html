@@ -1,16 +1,206 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<style>
+    body {
+        color: #566787;
+        background: #f5f5f5;
+        font-family: 'Roboto', sans-serif;
+    }
+    .table-responsive {
+        margin: 30px 0;
+    }
+    .table-wrapper {
+        min-width: 1000px;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+    .table-title {
+        font-size: 15px;
+        padding-bottom: 10px;
+        margin: 0 0 10px;
+        min-height: 45px;
+    }
+    .table-title h2 {
+        margin: 5px 0 0;
+        font-size: 24px;
+    }
+    .table-title select {
+        border-color: #ddd;
+        border-width: 0 0 1px 0;
+        padding: 3px 10px 3px 5px;
+        margin: 0 5px;
+    }
+    .table-title .show-entries {
+        margin-top: 7px;
+    }
+    .search-box {
+        position: relative;
+        float: right;
+    }
+    .search-box .input-group {
+        min-width: 200px;
+        position: absolute;
+        right: 0;
+    }
+    .search-box .input-group-addon, .search-box input {
+        border-color: #ddd;
+        border-radius: 0;
+    }
+    .search-box .input-group-addon {
+        border: none;
+        border: none;
+        background: transparent;
+        position: absolute;
+        z-index: 9;
+    }
+    .search-box input {
+        height: 34px;
+        padding-left: 28px;
+        box-shadow: none !important;
+        border-width: 0 0 1px 0;
+    }
+    .search-box input:focus {
+        border-color: #3FBAE4;
+    }
+    .search-box i {
+        color: #a0a5b1;
+        font-size: 19px;
+        position: relative;
+        top: 8px;
+    }
+    table.table tr th, table.table tr td {
+        border-color: #e9e9e9;
+    }
+    table.table th i {
+        font-size: 13px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    table.table td:last-child {
+        width: 130px;
+    }
+    table.table td a {
+        color: #a0a5b1;
+        display: inline-block;
+        margin: 0 5px;
+    }
+    table.table td a.view {
+        color: #03A9F4;
+    }
+    table.table td a.edit {
+        color: #FFC107;
+    }
+    table.table td a.delete {
+        color: #E34724;
+    }
+    table.table td i {
+        font-size: 19px;
+    }
+    .pagination {
+        float: right;
+        margin: 0 0 5px;
+    }
+    .pagination li a {
+        border: none;
+        font-size: 13px;
+        min-width: 30px;
+        min-height: 30px;
+        padding: 0 10px;
+        color: #999;
+        margin: 0 2px;
+        line-height: 30px;
+        border-radius: 30px !important;
+        text-align: center;
+    }
+    .pagination li a:hover {
+        color: #666;
+    }
+    .pagination li.active a {
+        background: #03A9F4;
+    }
+    .pagination li.active a:hover {
+        background: #0397d6;
+    }
+    .pagination li.disabled i {
+        color: #ccc;
+    }
+    .pagination li i {
+        font-size: 16px;
+        padding-top: 6px
+    }
+    .hint-text {
+        float: left;
+        margin-top: 10px;
+        font-size: 13px;
+    }
+    </style>
+    
+    <script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+        // Animate select box length
+        var searchInput = $(".search-box input");
+        var inputGroup = $(".search-box .input-group");
+        var boxWidth = inputGroup.width();
+        searchInput.focus(function(){
+            inputGroup.animate({
+                width: "300"
+            });
+        }).blur(function(){
+            inputGroup.animate({
+                width: boxWidth
+            });
+        });
+    });
+    </script>
+{% endblock stylesheets %}
+
 {% block content %}
 <h1>Exercises</h1>
     {% if request.user.is_authenticated %}
-        <ul>
-        {% for exercisetracker in object_list %}
-            <a href={{ exercisetracker.get_absolute_url }}><li>{{ exercisetracker.exercise }} - {{ exercisetracker.time_stamp|date }} </li></a>
-        {% empty %}
-            <li>No exercises yet.</li>
-        {% endfor %}
-        </ul>
+        <a href="{% url 'exercise:exercisetracker-create' %}" class="btn btn-primary" role="button">Add Workouts</a>
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Exercise</th>
+                                    <th>Count</th>
+                                    <th>Repetitions</th>
+                                    <th>Weight</th>
+                                    <th>Duration</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exercisetracker in object_list %}
+                                    <tr>
+                                        <th>{{ exercisetracker.exercise }}</th>
+                                        <td>{{ exercisetracker.count }}</td>
+                                        <td>{{ exercisetracker.repetitions }}</td>
+                                        <td>{{ exercisetracker.weight }}</td>
+                                        <td>{{ exercisetracker.duration }}</td>
+                                        <td>{{ exercisetracker.time_stamp|date }}</td>
+                                        <td>
+                                            <a href="{{ exercisetracker.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                            <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                            <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <li>No exercises yet.</li>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% else %}
         <h6>Login to track exercises</h6>
     {% endif %}

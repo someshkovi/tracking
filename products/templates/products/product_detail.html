@@ -1,14 +1,45 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block title %} Product detail {% endblock %}
+{% block stylesheets %}
+<style>
+    a.edit {
+        color: #FFC107;
+    }
+    a.delete {
+        color: #E34724;
+    }
+    a.back {
+        color: green;
+    }
+</style>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+        // Animate select box length
+        var searchInput = $(".search-box input");
+        var inputGroup = $(".search-box .input-group");
+        var boxWidth = inputGroup.width();
+        searchInput.focus(function(){
+            inputGroup.animate({
+                width: "300"
+            });
+        }).blur(function(){
+            inputGroup.animate({
+                width: boxWidth
+            });
+        });
+    });
+</script>
+{% endblock stylesheets %}
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col-12 col-md-8">
                 <h1>{{ object.name }}</h1>
-                <a href="{{ product.get_edit_url }}" class="btn btn-primary active" role="button" aria-pressed="true">Edit</a>
-                <a href="{{ product.get_absolute_url }}delete/" class="btn btn-primary active" role="button" aria-pressed="true">Delete</a>
-                <a href="{% url 'products:index' %}" class="btn btn-primary active" role="button" aria-pressed="true">Back</a>
+                <a href="{{ product.get_edit_url }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                <a href="{{ product.get_absolute_url }}delete/" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                <a href="{% url 'products:index' %}" class="back" title="back" data-toggle="tooltip"><i class="material-icons">&#xE5C4;</i></a>
                 {% if object.url %}
                     {% if not object.is_url_valid %}
                         <div class="alert alert-danger" role="alert"> Invalid Url / Unable to fetch data</div>

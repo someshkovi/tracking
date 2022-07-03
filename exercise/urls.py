@@ -1,6 +1,12 @@
 from django.urls import path
 
-from exercise.views import ExerciseListView, ExerciseDetailView, ExerciseTrackerListView, ExerciseTrackerDetailView
+from exercise.views import (
+    ExerciseListView,
+    ExerciseDetailView,
+    ExerciseTrackerListView,
+    ExerciseTrackerDetailView,
+    ExerciseTrackerCreateView
+)
 
 
 app_name = 'exercise'
@@ -9,4 +15,5 @@ urlpatterns = [
     path('exercise/<int:pk>/', ExerciseDetailView.as_view(), name='exercise-detail'),
     path('', ExerciseTrackerListView.as_view(), name='exercisetracker-list'),
     path('<int:pk>/', ExerciseTrackerDetailView.as_view(), name='exercisetracker-detail'),
+    path('add/', ExerciseTrackerCreateView.as_view(), name='exercisetracker-create'),
 ]

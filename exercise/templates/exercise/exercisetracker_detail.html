@@ -7,4 +7,5 @@
 <p>Body Part: {{ object.exercise.primary_body_part }}</p>
 <p>Published: {{ object.time_stamp }}</p>
 <p>Date: {{ now|date }}</p>
+<a href="{% url 'exercise:exercisetracker-list' %}" class="btn btn-primary" role="button">Go to list</a>
 {% endblock content %}

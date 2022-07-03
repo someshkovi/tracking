@@ -54,13 +54,20 @@ class ExerciseTrackerDetailView(DetailView):
         context['now'] = timezone.now()
         return context
 
+
 class ExerciseTrackerCreateView(CreateView):
     model = ExerciseTracker
-    # fields = ['name']
+    fields = ['exercise', 'count', 'repetitions', 'weight', 'duration']
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 
 class ExerciseTrackerUpdateView(UpdateView):
     model = ExerciseTracker
     # fields = ['name']
+
 
 class ExerciseTrackerDeleteView(DeleteView):
     model = ExerciseTracker

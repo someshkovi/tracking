@@ -1,5 +1,18 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
+
+
+@dataclass
+class Product:
+    name: Optional[str] = field(default=None)
+    price: Optional[int] = field(default=None)
+    rating: Optional[float] = field(default=None)
+    url: Optional[str] = field(default=None)
+    reviews_count: Optional[int] = field(default=None)
+    ratings_count: Optional[int] = field(default=None)
+    availability: Optional[bool] = field(default=None)
+    availability_message: Optional[str] = field(default=None)
+    specifications: Optional[list] = field(default=None)
 
 
 @dataclass

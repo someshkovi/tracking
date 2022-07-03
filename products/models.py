@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse, reverse_lazy
 from django.conf import settings
 from products.constants import WEBSITE_CHOICES
+from django.contrib import admin
 
 
 class TimestampModel(models.Model):
@@ -42,6 +43,14 @@ class Product(TimestampModel):
     availability = models.BooleanField(default=True, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        if self.price is not None:
+            if self.max_price is None:
+                self.max_price = self.price
+            if self.min_price is None:
+                self.min_price = self.price
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
         return f'{self.name}'
 
@@ -54,15 +63,22 @@ class Product(TimestampModel):
         if self.pk:
             return reverse('products:product-update', kwargs={'pk': self.pk})
         return reverse_lazy('products:products-list')
+    
+    @admin.display(
+        boolean=True,
+    )
+    def is_price_below_target_price(self):
+        if None not in (self.target_price, self.price):
+            return self.target_price<=self.price
+        return False
 
-    def save(self, *args, **kwargs):
-        if self.price is not None:
-            if self.max_price is None:
-                self.max_price = self.price
-            if self.min_price is None:
-                self.min_price = self.price
-        super().save(*args, **kwargs)
-
+    @admin.display(
+        boolean=True,
+    )
+    def is_at_lowest_price(self):
+        if None not in (self.price, self.max_price, self.min_price):
+            return self.min_price<self.max_price and self.min_price<=self.price
+        return False
 
 class ProductPriceChange(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -74,3 +90,10 @@ class ProductPriceChange(models.Model):
 
     def __str__(self) -> str:
         return f'{self.date} > {self.product.name}'
+
+
+class MultiProductCollectiveTracking(models.Model):
+    products = models.ManyToManyField(Product)
+    total_price = models.IntegerField(blank=True, null=True)
+    total_target_price = models.IntegerField(blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

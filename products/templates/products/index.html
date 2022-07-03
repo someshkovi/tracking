@@ -10,6 +10,55 @@
 {#            colspan: 6;#}
 {#        }#}
 {#    </style>#}
+
+<style>
+  table.table th i {
+    font-size: 13px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+table.table td:last-child {
+    width: 130px;
+}
+table.table td a {
+    color: #a0a5b1;
+    display: inline-block;
+    margin: 0 5px;
+}
+table.table td a.view {
+    color: #03A9F4;
+}
+table.table td a.edit {
+    color: #FFC107;
+}
+table.table td a.delete {
+    color: #E34724;
+}
+table.table td i {
+    font-size: 19px;
+}
+
+
+</style>
+
+<script>
+  $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+      // Animate select box length
+      var searchInput = $(".search-box input");
+      var inputGroup = $(".search-box .input-group");
+      var boxWidth = inputGroup.width();
+      searchInput.focus(function(){
+          inputGroup.animate({
+              width: "300"
+          });
+      }).blur(function(){
+          inputGroup.animate({
+              width: boxWidth
+          });
+      });
+  });
+  </script>
 {% endblock stylesheets %}
 {% block content %}
 
@@ -72,7 +121,7 @@ function myFunction() {
                             {% for product in products_with_below_targe_price %}
                               <tr>
                                   <th scope="row">{{ product.id }}</th>
-                                  <td><a href={{product.get_absolute_url}}>{{ product.name }}</a></td>
+                                  <td>{{ product.name }}</td>
                                   {% if product.price %}
                                     <td>{{ product.price }}</td>
                                   {% else %}
@@ -98,12 +147,17 @@ function myFunction() {
                                   {% else %}
                                   <td></td>
                                   {% endif %}
+                                  <td>
+                                    <a href="{{ product.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td>
                               </tr>
                           {% endfor %}
-                        {% else %}
-                            <tr>
-                            <td colspan="7" style="text-align: center">No Products are below Target price</td>
-                            </tr>
+{#                        {% else %}#}
+{#                            <tr>#}
+{#                            <td colspan="7" style="text-align: center">No Products are below Target price</td>#}
+{#                            </tr>#}
                         {% endif %}
                         {% if products_at_min_price %}
                             <tr>
@@ -112,7 +166,7 @@ function myFunction() {
                             {% for product in products_at_min_price %}
                               <tr>
                                   <th scope="row">{{ product.id }}</th>
-                                  <td><a href={{product.get_absolute_url}}>{{ product.name }}</a></td>
+                                  <td>{{ product.name }}</td>
                                   {% if product.price %}
                                     <td>{{ product.price }}</td>
                                   {% else %}
@@ -138,21 +192,28 @@ function myFunction() {
                                   {% else %}
                                   <td></td>
                                   {% endif %}
+                                  <td>
+                                    <a href="{{ product.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td>
                               </tr>
                           {% endfor %}
-                        {% else %}
-                            <tr>
-                            <td colspan="7" style="text-align: center">No Products at min price</td>
-                            </tr>
+{#                        {% else %}#}
+{#                            <tr>#}
+{#                            <td colspan="7" style="text-align: center">No Products at min price</td>#}
+{#                            </tr>#}
                         {% endif %}
                         {% if other_products %}
                             <tr>
-                                <td colspan="7" style="text-align: center">Other products</td>
+                                {% if products_at_min_price or products_with_below_targe_price %}
+                                    <td colspan="7" style="text-align: center">Other products</td>
+                                {% endif %}
                             </tr>
                             {% for product in other_products %}
                               <tr>
                                   <th scope="row">{{ product.id }}</th>
-                                  <td><a href={{product.get_absolute_url}}>{{ product.name }}</a></td>
+                                  <td>{{ product.name }}</td>
                                   {% if product.price %}
                                     <td>{{ product.price }}</td>
                                   {% else %}
@@ -178,6 +239,11 @@ function myFunction() {
                                   {% else %}
                                   <td></td>
                                   {% endif %}
+                                  <td>
+                                    <a href="{{ product.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td>
                               </tr>
                           {% endfor %}
                         {% endif %}
