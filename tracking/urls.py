@@ -28,13 +28,15 @@ def index(request):
 
 
 from accounts.views import SignUpView
+from products.views import index
 
 urlpatterns = [
+    path('', index, name='index'),
     path("accounts/signup/", SignUpView.as_view(), name="signup"),
     path("accounts/", include("django.contrib.auth.urls")),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('exercise/', include('exercise.urls')),
-    path('', include('products.urls')),
+    path('products/', include('products.urls')),
     path('test/', test, name='test')
 ]

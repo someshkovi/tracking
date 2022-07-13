@@ -1,0 +1,17 @@
+Django
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+Faker
+behave
+behave-django
+selenium
+gunicorn
+pandas
+requests
+drf-yasg
+lxml
+django-crispy-forms
+hypothesis #for testing
+coreapi
+pyyaml

@@ -47,8 +47,12 @@ def get_amazon_product_info(url):
     try:
         product = Product()
         product.name = req_soup.find(id='productTitle').get_text().strip()
-        price_str = req_soup.find('span', attrs={'class': 'a-price a-text-price a-size-medium apexPriceToPay'}
-                                  ).find('span', attrs={'class': 'a-offscreen'}).get_text()
+        if req_soup.find('span', attrs={'class': 'a-price a-text-price a-size-medium apexPriceToPay'}) is not None:
+            price_element = req_soup.find('span', attrs={'class': 'a-price a-text-price a-size-medium apexPriceToPay'}
+                                          ).find('span', attrs={'class': 'a-offscreen'})
+        else:
+            price_element = req_soup.find('span', attrs={'class': 'a-price-whole'})
+        price_str = price_element.get_text()
         rating = req_soup.find('span', attrs={'class': 'a-icon-alt'})
         if rating is not None:
             rating = rating.get_text()

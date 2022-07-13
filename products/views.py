@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.views.generic.edit import FormMixin, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 
-from products.models import Product, ProductCategory
+from products.models import Product, ProductCategory, ProductPriceChange
 from products.forms import ProductForm, ProductCustomForm
 from scripts.fetch_data import store_update_price
 from django.db.models import F
@@ -82,6 +82,9 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['now'] = timezone.now()
+        # fetching historic data
+        product = context['object']
+        context['historic_data'] = ProductPriceChange.objects.filter(product=product).values_list('price', 'date')
         return context
 
 

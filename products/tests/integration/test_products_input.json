@@ -1,0 +1,8 @@
+{
+  "testProduct1": {
+    "name": "tp1",
+    "price": 100,
+    "url": "test_url"
+  },
+  "testProduct2": ""
+}

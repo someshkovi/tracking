@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.db.models.signals import post_save
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -81,6 +81,21 @@ class ProductRetrieveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
         })
 
 
+def _update_product_price(product):
+    if product.url is not None:
+        response = json.loads(store_update_price(product.url))
+        price = response.get('price')
+        product.price = price
+        # updating product name and site name
+        if response.get('title') is not None:
+            product.name_in_site = response.get('title')[:200]
+            if product.name is None or product.name == '':
+                product.name = response.get('title')[:200]
+        product.is_url_valid = response.get('is_url_valid')
+    product.save()
+    return product
+
+
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication, BasicAuthentication, JWTAuthentication])
@@ -89,26 +104,40 @@ def fetch_latest_price(request, pk):
     try:
         product = Product.objects.get(pk=pk)
     except Product.DoesNotExist:
-        return HttpResponse(status=404)
-    if product.url is not None:
-        response = json.loads(store_update_price(product.url))
-        price = response.get('price')
-        if price is not None:
-            product.price = price
-            # updating min price
-            if product.min_price is None:
-                product.min_price = price
-            if product.min_price < price:
-                product.min_price = price
-            # updating max price
-            if product.max_price is None:
-                product.max_price = price
-            if product.max_price > price:
-                product.max_price = price
-
-        if (product.name is None or product.name == '') and response.get('name') is not None:
-            product.name = response.get('title')[:200]
-        product.is_url_valid = response.get('is_url_valid')
+        return Response(data={
+            "status": False,
+            "message": "Product Not found!",
+            "data": {}
+        }, status=404)
+    _update_product_price(product)
     serializer = serializers.ProductSerializer(product)
-    product.save()
-    return JsonResponse(serializer.data, status=201)
+    return Response(data={
+        "status": True,
+        "message": "Product Updated!",
+        "data": serializer.data
+    }, status=201)
+
+
+# @csrf_exempt
+@api_view(['GET'])
+# @authentication_classes([SessionAuthentication, BasicAuthentication, JWTAuthentication])
+# @permission_classes([IsAdminUser])
+def fetch_latest_price_all_products(request):
+    products = Product.objects.all()
+    product_ids = products.values_list('id', flat=True)
+    update_status = []
+    for product in products:
+        _update_product_price(product)
+        update_status.append({
+            'product_id': product.id,
+            'product_name': product.name,
+            'updated_price': product.price
+        })
+    return Response(data={
+        "status": True,
+        "message": "Products Updated!",
+        "data": {
+            'product_ids': list(product_ids),
+            'update_status': update_status
+        }
+    }, status=200)
