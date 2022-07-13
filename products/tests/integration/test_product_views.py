@@ -35,17 +35,3 @@ class ProductCreateTestCase(TestCase):
         self.assertEquals(get_product.price, response.context_data['product'].min_price, 100)
         self.assertEqual(get_product.availability, False)
         self.assertEqual(get_product.is_url_valid, False)
-
-    def test_ProductUpdateView(self):
-        response = self.client.post(
-            reverse('products:product-update', kwargs={'pk': self.p1.id}),
-            {
-                # 'name': 'tp1',
-                # 'category':
-                # 'price': 250,
-                # 'url': 'test_url',
-            }
-        )
-        self.assertEqual(response.status_code, 302)
-        self.p1.refresh_from_db()
-        self.assertEqual(self.p1.price, 250)

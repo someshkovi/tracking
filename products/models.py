@@ -1,6 +1,8 @@
 import datetime
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse, reverse_lazy
 from django.conf import settings
 from products.constants import WEBSITE_CHOICES
@@ -57,11 +59,11 @@ class Product(TimestampModel):
             else:
                 self.min_price = min(self.min_price, self.price)
 
-            # add historic data to ProductPriceChange model
-            # new_obj, created = statement can be used to check if its created
-            # ProductPriceChange.objects.get_or_create(product=self, price=self.price, date=datetime.date.today())
-            if not len(ProductPriceChange.objects.filter(product=self, date=datetime.date.today())):
-                ProductPriceChange.objects.create(product=self, price=self.price, date=datetime.date.today())
+            # # add historic data to ProductPriceChange model
+            # # new_obj, created = statement can be used to check if its created
+            # # ProductPriceChange.objects.get_or_create(product=self, price=self.price, date=datetime.date.today())
+            # if not len(ProductPriceChange.objects.filter(product=self, date=datetime.date.today())):
+            #     ProductPriceChange.objects.create(product=self, price=self.price, date=datetime.date.today())
 
         if self.name_in_site is None and self.name is not None:
             self.name_in_site = self.name
@@ -110,6 +112,13 @@ class ProductPriceChange(models.Model):
 
     def __str__(self) -> str:
         return f'{self.date} > {self.product.name}'
+
+
+@receiver(post_save, sender=Product)
+def save_profile(sender, instance, **kwargs):
+    if instance.price is not None:
+        if not len(ProductPriceChange.objects.filter(product=instance, date=datetime.date.today())):
+            ProductPriceChange.objects.create(product=instance, price=instance.price, date=datetime.date.today())
 
 
 class MultiProductCollectiveTracking(models.Model):
