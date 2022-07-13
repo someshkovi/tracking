@@ -1,8 +1,10 @@
 import json
 
+from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.http.request import QueryDict
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -10,6 +12,7 @@ from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPI
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.db.models.signals import post_save
+from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from products.models import Product
@@ -118,12 +121,32 @@ def fetch_latest_price(request, pk):
     }, status=201)
 
 
-# @csrf_exempt
-@api_view(['GET'])
-# @authentication_classes([SessionAuthentication, BasicAuthentication, JWTAuthentication])
+# # @csrf_exempt
+# @api_view(['GET'])
+# # @authentication_classes([SessionAuthentication, BasicAuthentication, JWTAuthentication])
 # @permission_classes([IsAdminUser])
-def fetch_latest_price_all_products(request):
-    products = Product.objects.all()
+# def fetch_latest_price_all_products(request):
+#     products = Product.objects.all()
+#     product_ids = products.values_list('id', flat=True)
+#     update_status = []
+#     for product in products:
+#         _update_product_price(product)
+#         update_status.append({
+#             'product_id': product.id,
+#             'product_name': product.name,
+#             'updated_price': product.price
+#         })
+#     return Response(data={
+#         "status": True,
+#         "message": "Products Updated!",
+#         "data": {
+#             'product_ids': list(product_ids),
+#             'update_status': update_status
+#         }
+#     }, status=200)
+
+
+def update_products(products) -> Response:
     product_ids = products.values_list('id', flat=True)
     update_status = []
     for product in products:
@@ -141,3 +164,53 @@ def fetch_latest_price_all_products(request):
             'update_status': update_status
         }
     }, status=200)
+
+
+class UpdateAllProducts(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        products = Product.objects.all()
+        response = update_products(products)
+        return response
+
+
+class UpdateAllMyProducts(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description='Update all my products',
+        operation_summary='update all my products',
+        tags=['product'])
+    def post(self, request):
+        products = Product.objects.filter(user=request.user)
+        response = update_products(products)
+        return response
+
+
+class GetProductsBelowTargetPrice(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description='Get products below target price',
+        operation_summary='below target price',
+        tags=['product'])
+    def get(self, request, format=None):
+        products_with_below_targe_price = Product.objects.filter(
+            user=request.user).filter(
+            target_price__isnull=False).filter(target_price__gte=F('price'))
+        req_list = [{'name': product.name,
+                     'price': product.price,
+                     'target_price': product.target_price,
+                     'url': product.url}
+                    for product in products_with_below_targe_price]
+        return Response(data={
+            'status': True,
+            'message': '',
+            'data': {
+                'products': req_list
+            }
+        }, status=200)
