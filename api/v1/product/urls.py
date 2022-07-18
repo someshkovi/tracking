@@ -8,4 +8,8 @@ urlpatterns = [
     path('update/all/', views.UpdateAllMyProducts.as_view(), name='update-all-my-products-from-urls'),
     path('admin/update/all/', views.UpdateAllProducts.as_view(), name='update-all-products-from-urls'),
     path('pbtp/', views.GetProductsBelowTargetPrice.as_view(), name='products-below-target-price'),
+    path('unavailable_roducts/', views.GetProductsUnavailableValidUrl.as_view(), name='unavailable-products'),
+    path('price_change/<int:pk>', views.GetProductPriceChange.as_view(), name='price-change-products'),
+    # path('test/', views.test.as_view(), name='test'),
+
 ]

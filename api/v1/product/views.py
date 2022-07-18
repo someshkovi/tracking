@@ -1,5 +1,6 @@
 import json
 
+from datetime import datetime, timedelta
 from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.http.request import QueryDict
@@ -15,7 +16,7 @@ from django.db.models.signals import post_save
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from products.models import Product
+from products.models import Product, ProductPriceChange
 from . import serializers
 from . import signals
 from scripts.fetch_data import store_update_price
@@ -190,6 +191,26 @@ class UpdateAllMyProducts(APIView):
         return response
 
 
+def base_get_return_response(request, req_product_queryset):
+    """
+    :param standard request:
+    :param the required product query set req_product_queryset:
+    :return: Response object
+    """
+    req_list = [{'name': product.name,
+                 'price': product.price,
+                 'target_price': product.target_price,
+                 'url': product.url}
+                for product in req_product_queryset]
+    return Response(data={
+        'status': True,
+        'message': '',
+        'data': {
+            'products': req_list
+        }
+    }, status=200)
+
+
 class GetProductsBelowTargetPrice(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -199,18 +220,65 @@ class GetProductsBelowTargetPrice(APIView):
         operation_summary='below target price',
         tags=['product'])
     def get(self, request, format=None):
-        products_with_below_targe_price = Product.objects.filter(
+        req_product_queryset = Product.objects.filter(
             user=request.user).filter(
             target_price__isnull=False).filter(target_price__gte=F('price'))
-        req_list = [{'name': product.name,
-                     'price': product.price,
-                     'target_price': product.target_price,
-                     'url': product.url}
-                    for product in products_with_below_targe_price]
+        return base_get_return_response(request, req_product_queryset)
+
+
+class GetProductsUnavailableValidUrl(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description='Get products with unavailable but valid url',
+        operation_summary='unavailable but valid url',
+        tags=['product'])
+    def get(self, request, format=None):
+        req_product_queryset = Product.objects.filter(
+            user=request.user).filter(is_url_valid=True).filter(availability=False)
+        return base_get_return_response(request, req_product_queryset)
+
+
+class GetProductsAvailabilityChanged(APIView):
+    """
+    return products that are unavailable yesterday and available today
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        pass
+        # req_product_queryset = Product.objects.filter(
+        #     user=request.user).filter(is_url_valid=True).filter(availability=False)
+        # return base_get_return_response(request, req_product_queryset)
+
+
+class GetProductPriceChange(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        today = datetime.today()
+        thirty_days_back = today - timedelta(days=30)
+        # myProducts = Product.objects.filter(
+        #     user=request.user)
+        # for myproduct in myProducts:
+
+        try:
+            product = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response(data={
+                "status": False,
+                "message": "Product Not found!",
+                "data": {}
+            }, status=404)
+        product_price_history = ProductPriceChange.objects.filter(product=product).filter(date__gte=thirty_days_back)
+        product_price_history_list = [{str(x.date): x.price} for x in product_price_history]
         return Response(data={
             'status': True,
             'message': '',
             'data': {
-                'products': req_list
+                'price_history': product_price_history_list
             }
         }, status=200)
