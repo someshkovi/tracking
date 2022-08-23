@@ -13,8 +13,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
-        validators = [
-            serializers.UniqueTogetherValidator(
-                queryset=Product.objects.all(),
-                fields=['name', 'url', 'user']
-        )]
+        # validators = [
+        #     serializers.UniqueTogetherValidator(
+        #         queryset=Product.objects.all(),
+        #         fields=['name', 'url', 'user']
+        # )]

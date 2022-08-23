@@ -22,7 +22,8 @@ class ProductCreateTestCase(base_test.NewUserTestCase):
         self.create_product = self.client.post('/api/v1/product/',
                                                {
                                                    'name': 'Test product',
-                                                   'price': 1010
+                                                   'price': 1010,
+                                                   'url': 'https://site.in/test-product1'
                                                })
         self.assertEquals(self.create_product.status_code, 201)
         self.assertTrue('Test product' in self.create_product.json()['data']['name'])
