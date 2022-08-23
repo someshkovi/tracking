@@ -2,10 +2,10 @@ import json
 
 from scripts.constants import Constants
 from scripts.amazon import get_amazon_product_info, get_amazon_results_by_search
-from scripts.flipkart import get_flipkart_product_info
+from scripts.flipkart import get_flipkart_product_info, get_flipkart_results_by_search
 
 
-def store_update_price(product_url, service='amazon.in', limit=10_00_00_000):
+def store_update_price(product_url: str, service: str='amazon.in', limit: int =10_00_00_000)->json:
     if 'amazon.in' in product_url:
         response = get_amazon_product_info(product_url)
     elif 'flipkart.com' in product_url:
@@ -40,3 +40,19 @@ def store_update_price(product_url, service='amazon.in', limit=10_00_00_000):
         'ratings_count': ratings_count
     })
     return json_response
+
+
+def search_results_fetch(search_parameter:str, service:str='all', no_of_pages:int=10)->json:
+    data = []
+    if 'flipkart.com' in service:
+        flipkart_response = get_flipkart_results_by_search(search_parameter=search_parameter, no_of_pages=no_of_pages)
+        data += flipkart_response.get('data', [])
+    if 'amazon.in' in service:
+        amazon_response = get_amazon_results_by_search(search_parameter=search_parameter, no_of_pages=no_of_pages)
+        data += amazon_response.get('data', [])
+    if 'all' == service:
+        amazon_response = get_amazon_results_by_search(search_parameter=search_parameter, no_of_pages=no_of_pages)
+        data += amazon_response.get('data', [])
+        flipkart_response = get_flipkart_results_by_search(search_parameter=search_parameter, no_of_pages=no_of_pages)
+        data += flipkart_response.get('data', [])
+    return json.dumps(data)

@@ -10,6 +10,7 @@ urlpatterns = [
     path('pbtp/', views.GetProductsBelowTargetPrice.as_view(), name='products-below-target-price'),
     path('unavailable_roducts/', views.GetProductsUnavailableValidUrl.as_view(), name='unavailable-products'),
     path('price_change/<int:pk>', views.GetProductPriceChange.as_view(), name='price-change-products'),
+    path('search_only/', views.GetSearchOnlyProducts.as_view()),
+    path('search_query/<str:search_value>', views.SearchAdd.as_view(), name='products-search'),
     # path('test/', views.test.as_view(), name='test'),
-
 ]

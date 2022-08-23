@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.utils import timezone
 from django.contrib import messages
-from django.views.generic.edit import FormMixin, UpdateView, DeleteView
+from django.views.generic.edit import FormMixin, UpdateView, DeleteView, CreateView
 from django.contrib.auth.decorators import login_required
 
 from products.models import Product, ProductCategory, ProductPriceChange
@@ -16,7 +16,7 @@ from django.db.models import F, Q
 
 @login_required
 def index(request):
-    user_products = Product.objects.filter(user=request.user)
+    user_products = Product.objects.filter(only_for_search=False).filter(user=request.user)
     products_with_below_targe_price = user_products.filter(
         target_price__isnull=False).filter(target_price__gte=F('price'))
     products_at_min_price = user_products.filter(
@@ -99,3 +99,8 @@ class ProductUpdateView(UpdateView):
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('products:index')
+
+def SearchAddView(request):
+    if request.method == 'POST':
+        pass
+

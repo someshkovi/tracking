@@ -19,7 +19,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from products.models import Product, ProductPriceChange
 from . import serializers
 from . import signals
-from scripts.fetch_data import store_update_price
+from scripts.fetch_data import store_update_price, search_results_fetch
 
 
 class ProductsAPI(ListCreateAPIView):
@@ -172,7 +172,7 @@ class UpdateAllProducts(APIView):
     permission_classes = [IsAdminUser]
 
     def post(self, request):
-        products = Product.objects.all()
+        products = Product.objects.filter(only_for_search=True)
         response = update_products(products)
         return response
 
@@ -202,13 +202,7 @@ def base_get_return_response(request, req_product_queryset):
                  'target_price': product.target_price,
                  'url': product.url}
                 for product in req_product_queryset]
-    return Response(data={
-        'status': True,
-        'message': '',
-        'data': {
-            'products': req_list
-        }
-    }, status=200)
+    return Response(data=req_list, status=200)
 
 
 class GetProductsBelowTargetPrice(APIView):
@@ -275,10 +269,39 @@ class GetProductPriceChange(APIView):
             }, status=404)
         product_price_history = ProductPriceChange.objects.filter(product=product).filter(date__gte=thirty_days_back)
         product_price_history_list = [{str(x.date): x.price} for x in product_price_history]
-        return Response(data={
-            'status': True,
-            'message': '',
-            'data': {
-                'price_history': product_price_history_list
-            }
-        }, status=200)
+        return Response(data=product_price_history_list, status=200)
+
+
+class GetSearchOnlyProducts(APIView):
+    def get(self, request):
+        data = Product.objects.filter(only_for_search=True)
+        return base_get_return_response(request, data)
+
+class SearchAdd(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, search_value):
+        # print(request, search_value)
+        data = search_results_fetch(search_value)
+        return Response(data=data, status=200)
+
+
+    def post(self, request, search_value):
+        data = json.loads(search_results_fetch(search_value))
+        for product in data:
+            product['is_url_valid'] = True
+            product['user'] = request.user.id
+            product['only_for_search'] = True
+            serializer = serializers.ProductSerializer(data=product)
+            if serializer.is_valid(raise_exception=False):
+                serializer.save()
+        # headers = self.get_success_headers(serializer.data)
+
+        return Response({
+            "status": True,
+            "message": f'{len(data)} {search_value}\'s added',
+            # "data": serializers.ProductSerializer(data, many=True)
+        }, status=status.HTTP_201_CREATED,
+        #  headers=headers
+         )

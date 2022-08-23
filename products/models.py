@@ -45,7 +45,7 @@ class Product(TimestampModel):
     reviews_count = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     availability_message = models.CharField(max_length=100, null=True, blank=True)
     availability = models.BooleanField(default=False)
-    only_for_search = models.BooleanField(default=True)
+    only_for_search = models.BooleanField(default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):

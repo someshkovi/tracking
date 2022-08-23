@@ -8,9 +8,10 @@ class Product:
     price: Optional[int] = field(default=None)
     rating: Optional[float] = field(default=None)
     url: Optional[str] = field(default=None)
+    site: Optional[str] = field(default=None)
     reviews_count: Optional[int] = field(default=None)
     ratings_count: Optional[int] = field(default=None)
-    availability: Optional[bool] = field(default=None)
+    availability: bool = field(default=False)
     availability_message: Optional[str] = field(default=None)
     specifications: Optional[list] = field(default=None)
 
