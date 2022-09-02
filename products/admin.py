@@ -63,4 +63,11 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(ProductCategory)
 admin.site.register(ProductPriceChange)
 
-admin.site.register(MultiProductCollectiveTracking)
+@admin.register(MultiProductCollectiveTracking)
+class MultiProductCollectiveTrackingAdmin(admin.ModelAdmin):
+    list_display = ('name', 'total_price')
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs: Any):
+        if db_field.name == "products":
+            kwargs["queryset"] = Product.objects.filter(only_for_search=False)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)

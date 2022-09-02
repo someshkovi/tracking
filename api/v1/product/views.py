@@ -23,7 +23,7 @@ from scripts.fetch_data import store_update_price, search_results_fetch
 
 
 class ProductsAPI(ListCreateAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(only_for_search=False)
     serializer_class = serializers.ProductSerializer
 
     # permission_classes = (AllowAny, )
@@ -172,7 +172,7 @@ class UpdateAllProducts(APIView):
     permission_classes = [IsAdminUser]
 
     def post(self, request):
-        products = Product.objects.filter(only_for_search=True)
+        products = Product.objects.filter(only_for_search=False)
         response = update_products(products)
         return response
 
@@ -186,7 +186,7 @@ class UpdateAllMyProducts(APIView):
         operation_summary='update all my products',
         tags=['product'])
     def post(self, request):
-        products = Product.objects.filter(user=request.user)
+        products = Product.objects.filter(only_for_search=False).filter(user=request.user)
         response = update_products(products)
         return response
 
@@ -214,7 +214,7 @@ class GetProductsBelowTargetPrice(APIView):
         operation_summary='below target price',
         tags=['product'])
     def get(self, request, format=None):
-        req_product_queryset = Product.objects.filter(
+        req_product_queryset = Product.objects.filter(only_for_search=False).filter(
             user=request.user).filter(
             target_price__isnull=False).filter(target_price__gte=F('price'))
         return base_get_return_response(request, req_product_queryset)
@@ -229,7 +229,7 @@ class GetProductsUnavailableValidUrl(APIView):
         operation_summary='unavailable but valid url',
         tags=['product'])
     def get(self, request, format=None):
-        req_product_queryset = Product.objects.filter(
+        req_product_queryset = Product.objects.filter(only_for_search=False).filter(
             user=request.user).filter(is_url_valid=True).filter(availability=False)
         return base_get_return_response(request, req_product_queryset)
 
@@ -243,7 +243,7 @@ class GetProductsAvailabilityChanged(APIView):
 
     def get(self, request, format=None):
         pass
-        # req_product_queryset = Product.objects.filter(
+        # req_product_queryset = Product.objects.filter(only_for_search=False).filter(
         #     user=request.user).filter(is_url_valid=True).filter(availability=False)
         # return base_get_return_response(request, req_product_queryset)
 
@@ -255,7 +255,7 @@ class GetProductPriceChange(APIView):
     def get(self, request, pk):
         today = datetime.today()
         thirty_days_back = today - timedelta(days=30)
-        # myProducts = Product.objects.filter(
+        # myProducts = Product.objects.filter(only_for_search=False).filter(
         #     user=request.user)
         # for myproduct in myProducts:
 

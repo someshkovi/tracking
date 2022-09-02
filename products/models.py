@@ -1,4 +1,5 @@
 import datetime
+from math import prod
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save
@@ -122,12 +123,32 @@ def save_profile(sender, instance, **kwargs):
 
 
 class MultiProductCollectiveTracking(models.Model):
+    """
+    Track a collection
+    """
+    name = models.CharField(max_length=100)
     products = models.ManyToManyField(Product)
     total_price = models.IntegerField(blank=True, null=True)
     total_target_price = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     price = 0
+    #     for product in self.products.all():
+    #         if product.price:
+    #             price+= product.price
+    #     self.total_price = price
+    #     super().save(*args, **kwargs)
+
+
+    def __str__(self) -> str:
+        return f'{self.name} > {self.total_price}'
+
 class MultiSiteTracking(models.Model):
+    """
+    Track a product across multiple sites
+    """
     products = models.ManyToManyField(Product)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
