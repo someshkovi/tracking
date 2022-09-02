@@ -3,6 +3,7 @@ import unicodedata
 from bs4 import BeautifulSoup as bs
 import requests
 from scripts.products import Product
+from scripts.constants import Constants
 from typing import List
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
@@ -79,7 +80,7 @@ def get_amazon_results_by_search(search_parameter: str, no_of_pages=2) -> dict:
 				except Exception as e:
 					pass
 	return {
-		'status': 'success',
+		'status': Constants.SUCCESS,
 		'error_msg': '',
 		'data': results
 	}
@@ -87,7 +88,18 @@ def get_amazon_results_by_search(search_parameter: str, no_of_pages=2) -> dict:
 
 def get_amazon_product_info(url: str) -> dict:
 	# page = requests.get(url, verify=True) ##request module cause robot verification so being faced out##
-	page = httpx.get(url)
+	try:
+		page = httpx.get(url)
+	except httpx.ConnectError:
+		error_msg = f'SSL certificate error for url {url}, try with verify false in code'
+		return {
+			'status': Constants.FAILURE,
+			'error_msg': error_msg,
+			'data': {}
+		}
+	# except Exception as e:
+	# 	print (e)
+	# 	return
 	soup = bs(page.content, features='lxml')
 	req_soup = soup.find(id='centerCol')
 	try:
@@ -108,7 +120,7 @@ def get_amazon_product_info(url: str) -> dict:
 	except Exception as e:
 		error_msg = f'exception in getting product info = {e}'
 		return {
-			'status': 'error',
+			'status': Constants.ERROR,
 			'error_msg': error_msg,
 			'data': {}
 		}
@@ -133,14 +145,14 @@ def get_amazon_product_info(url: str) -> dict:
 	except Exception as e:
 		error_msg = f'exception in getting product info = {e}'
 		return {
-			'status': 'error',
+			'status': Constants.ERROR,
 			'error_msg': error_msg,
 			'data': {}
 		}
 
 	data = product.__dict__
 	return {
-		'status': 'success',
+		'status': Constants.SUCCESS,
 		'error_msg': '',
 		'data': data
 	}
