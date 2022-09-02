@@ -1,5 +1,5 @@
 import dataclasses
-
+import httpx
 from bs4 import BeautifulSoup as bs
 import requests
 import re
@@ -19,7 +19,7 @@ def get_flipkart_results_by_search(search_parameter, no_of_pages=2, other_params
     results = []
     for page in range(no_of_pages):
         link = f'https://www.flipkart.com/search?q={search_parameter}&page={page}'
-        page = requests.get(link, verify=False)
+        page = httpx.get(link)
         soup = bs(page.content, 'html.parser')
         # for data in soup.findAll('div', class_='_3pLy-c row'):
         for data in soup.findAll('a', class_='_1fQZEK'):
@@ -59,7 +59,7 @@ def get_flipkart_results_by_search(search_parameter, no_of_pages=2, other_params
 
 def get_flipkart_product_info(url):
     product = Product()
-    page = requests.get(url, verify=False)
+    page = httpx.get(url)
     soup = bs(page.content, 'html.parser')
     data = soup.find('div', {'class': 'aMaAEs'})
     product.name = get_text(data.find('span', attrs={'class': 'B_NuCI'}))

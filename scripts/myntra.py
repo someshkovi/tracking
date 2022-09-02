@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import requests
 import traceback
+import httpx
 
 # from scripts.products import Product
 
@@ -12,7 +13,7 @@ def get_text(bs_attr, default=None):
 
 def get_myntra_product_info(url):
     # product = Product()
-    page = requests.get(url, verify=False)
+    page = httpx.get(url)
     soup = bs(page.content, 'html.parser')
     data = soup.find('div', {'class': 'pdp-price-info'})
     title = get_text(data.find('h1', attrs={'class': 'pdp-title'}))
