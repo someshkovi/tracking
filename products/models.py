@@ -1,13 +1,13 @@
 import datetime
-from math import prod
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse, reverse_lazy
 from django.conf import settings
-from products.constants import WEBSITE_CHOICES
 from django.contrib import admin
+
+from products.constants import WEBSITE_CHOICES
 
 
 class TimestampModel(models.Model):
@@ -47,7 +47,8 @@ class Product(TimestampModel):
     availability_message = models.CharField(max_length=100, null=True, blank=True)
     availability = models.BooleanField(default=False)
     only_for_search = models.BooleanField(default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                            on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.price is not None:
@@ -62,14 +63,17 @@ class Product(TimestampModel):
 
             # # add historic data to ProductPriceChange model
             # # new_obj, created = statement can be used to check if its created
-            # # ProductPriceChange.objects.get_or_create(product=self, price=self.price, date=datetime.date.today())
-            # if not len(ProductPriceChange.objects.filter(product=self, date=datetime.date.today())):
-            #     ProductPriceChange.objects.create(product=self, price=self.price, date=datetime.date.today())
+            # # ProductPriceChange.objects.get_or_create(
+            # product=self, price=self.price, date=datetime.date.today())
+            # if not len(ProductPriceChange.objects.filter(
+            # product=self, date=datetime.date.today())):
+            #     ProductPriceChange.objects.create(
+            # product=self, price=self.price, date=datetime.date.today())
 
         if self.name_in_site is None and self.name is not None:
             self.name_in_site = self.name
         if self.name is None and self.name_in_site is not None:
-            self.name = self.site_name
+            self.name = self.name_in_site
 
         super().save(*args, **kwargs)
 
@@ -116,10 +120,11 @@ class ProductPriceChange(models.Model):
 
 
 @receiver(post_save, sender=Product)
-def save_profile(sender, instance, **kwargs):
+def save_profile(_, instance, **kwargs):
     if instance.price is not None:
-        if not len(ProductPriceChange.objects.filter(product=instance, date=datetime.date.today())):
-            ProductPriceChange.objects.create(product=instance, price=instance.price, date=datetime.date.today())
+        if not ProductPriceChange.objects.filter(product=instance, date=datetime.date.today()):
+            ProductPriceChange.objects.create(
+                product=instance, price=instance.price, date=datetime.date.today())
 
 
 class MultiProductCollectiveTracking(models.Model):

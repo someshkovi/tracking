@@ -3,6 +3,3 @@ WEBSITE_CHOICES = (
     ('flipkart.com', 'flipkart'),
     ('amazon.com', 'amazon us')
 )
-
-
-

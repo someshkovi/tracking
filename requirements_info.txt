@@ -16,3 +16,6 @@ hypothesis #for testing
 coreapi
 pyyaml
 httpx
+pylint
+pylint-django
+pylint-celery

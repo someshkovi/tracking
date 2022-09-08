@@ -1,9 +1,12 @@
+from datetime import timedelta, datetime
 from typing import Any, Optional
+from django.utils.translation import gettext_lazy as _
+
 from django.db.models import QuerySet, F
 from django.contrib import admin
-from products.models import Product, ProductCategory, ProductPriceChange, MultiProductCollectiveTracking
-from django.utils.translation import gettext_lazy as _
-from datetime import timedelta, datetime
+from products.models import (
+    Product, ProductCategory, ProductPriceChange, MultiProductCollectiveTracking)
+
 
 class ProductListFilter(admin.SimpleListFilter):
     """
@@ -43,7 +46,9 @@ class ProductListFilter(admin.SimpleListFilter):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'price', 'target_price', 'availability', 'user', 'rating')
     ordering = ('site', 'name')
-    list_filter = (ProductListFilter, 'availability', 'availability_message', 'is_url_valid', 'only_for_search')
+    list_filter = (
+        ProductListFilter, 'availability', 'availability_message',
+         'is_url_valid', 'only_for_search')
     search_fields = ('url', 'name')
     readonly_fields=('created', 'updated', 'user', 'is_url_valid', 'name_in_site')
     fieldsets = [
@@ -52,7 +57,9 @@ class ProductAdmin(admin.ModelAdmin):
          {'fields': ['price', 'min_price', 'max_price'], 'classes':['collapse']}
          ),
         ('Rating and availability',
-         {'fields': ['availability', 'availability_message', 'rating', 'reviews_count', 'ratings_count'],
+         {'fields': [
+            'availability', 'availability_message',
+             'rating', 'reviews_count', 'ratings_count'],
           'classes': ['collapse']}),
         ('Read only',
         {'fields': ['created', 'updated', 'user', 'is_url_valid', 'name_in_site'],
