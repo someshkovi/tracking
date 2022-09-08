@@ -120,7 +120,7 @@ class ProductPriceChange(models.Model):
 
 
 @receiver(post_save, sender=Product)
-def save_profile(_, instance, **kwargs):
+def save_profile(sender, instance, **kwargs):
     if instance.price is not None:
         if not ProductPriceChange.objects.filter(product=instance, date=datetime.date.today()):
             ProductPriceChange.objects.create(
