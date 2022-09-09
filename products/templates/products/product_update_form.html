@@ -5,7 +5,9 @@
     <form method="POST">
         {% csrf_token %}
         {{ form|crispy }}
-        <input type="submit" value="Update">
-{#        <button class="btn btn-primary" type="submit">Submit</button>#}
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <input type="submit" class="btn btn-primary" value="Update">
+            <a href="{{ product.get_absolute_url }}" class="btn btn-primary" role="button">Cancel</a>
+        </div>
     </form>
 {% endblock %}

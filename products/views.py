@@ -1,17 +1,17 @@
 import json
 
+from django.db.models import F, Q
 from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.utils import timezone
 from django.contrib import messages
-from django.views.generic.edit import FormMixin, UpdateView, DeleteView, CreateView
+from django.views.generic.edit import UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 
 from products.models import Product, ProductCategory, ProductPriceChange
-from products.forms import ProductForm, ProductCustomForm
+from products.forms import ProductForm
 from scripts.fetch_data import store_update_price
-from django.db.models import F, Q
 
 
 @login_required
@@ -60,8 +60,6 @@ def index(request):
 
 class ProductsListView(ListView):
     model = Product
-
-    # queryset = ExerciseTracker.objects.all()
 
     def get_queryset(self):
         # self.publisher = get_object_or_404(Publisher, name=self.kwargs['publisher'])

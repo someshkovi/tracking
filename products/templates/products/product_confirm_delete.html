@@ -6,8 +6,10 @@
     <form method="post">{% csrf_token %}
         <p>Are you sure you want to delete "{{ object }}"?</p>
         {{ form }}
-        <input type="submit" class="btn btn-primary" value="Confirm">
-        <a href="{{ product.get_absolute_url }}" class="btn btn-secondary" role="button">Cancel</a>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <input type="submit" class="btn btn-primary" value="Confirm">
+            <a href="{{ product.get_absolute_url }}" class="btn btn-secondary" role="button">Cancel</a>
+        </div>
     </form>
 </div>
 

@@ -7,9 +7,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
+                {% if user.is_authenticated %}
                 <div class="navbar-nav">
                     <a href="{% url 'products:index' %}" class="nav-item nav-link active">Products</a>
-                    <a href="{% url 'exercise:exercisetracker-list' %}" class="nav-item nav-link">Exercises</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">api</a>
                         <div class="dropdown-menu">
@@ -20,6 +20,7 @@
                     </div>
                     <a href="/admin" class="nav-item nav-link" tabindex="-1">Admin</a>
                 </div>
+                {% endif %}
                 <div class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <a href="{% url 'logout' %}" class="nav-item nav-link">Log Out</a>

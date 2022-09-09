@@ -108,15 +108,16 @@ def get_flipkart_product_info(url):
 
 
 def main():
-    query = input('Enter the search parameter: \n')
-    results = get_flipkart_results_by_search(search_parameter=query, no_of_pages=2, other_params={})
-    if results.get('status') == 'success':
-        import pandas as pd
+    pass
+    # query = input('Enter the search parameter: \n')
+    # results = get_flipkart_results_by_search(search_parameter=query, no_of_pages=2, other_params={})
+    # if results.get('status') == 'success':
+    #     import pandas as pd
 
-        df = pd.DataFrame(results)
-        df = df.loc[:, ~df.columns.duplicated()]
-        print(df.head())
-        # df.to_csv(f'{query}.csv', index=False, encoding='utf-8')
+    #     df = pd.DataFrame(results)
+    #     df = df.loc[:, ~df.columns.duplicated()]
+    #     print(df.head())
+    #     # df.to_csv(f'{query}.csv', index=False, encoding='utf-8')
 
 
 if __name__ == '__main__':

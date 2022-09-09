@@ -106,10 +106,10 @@ function myFunction() {
                       <th scope="col">#</th>
                       <th scope="col">Name</th>
                       <th scope="col">Price</th>
-                      <th scope="col">Lowest Price</th>
-                      <th scope="col">Target Price</th>
+                      <th scope="col">Lowest</th>
+                      <th scope="col">Target</th>
                       <th scope="col">Rating</th>
-                      <th scope="col">Availability Message</th>
+                      <!-- <th scope="col"></th> -->
                       {% comment %} <th scope="col">Update Data</th> {% endcomment %}
                     </tr>
                   </thead>
@@ -121,7 +121,7 @@ function myFunction() {
                             {% for product in products_with_below_targe_price %}
                               <tr>
                                   <th scope="row">{{ product.id }}</th>
-                                  <td>{{ product.name }}</td>
+                                  <td><a href="{{ product.get_absolute_url }}" class="text-decoration-none">{{ product.name }}</a></td>
                                   {% if product.price %}
                                     <td>{{ product.price }}</td>
                                   {% else %}
@@ -142,16 +142,16 @@ function myFunction() {
                                   {% else %}
                                     <td></td>
                                   {% endif %}
-                                  {% if product.availability_message %}
+                                  <!-- {% if product.availability_message %}
                                     <td>{{ product.availability_message }}</td>
                                   {% else %}
                                   <td></td>
-                                  {% endif %}
-                                  <td>
+                                  {% endif %} -->
+                                  <!-- <td>
                                     <a href="{{ product.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                </td>
+                                    <a href="{{ product.get_edit_url }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="{{ product.get_absolute_url }}delete/" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td> -->
                               </tr>
                           {% endfor %}
 {#                        {% else %}#}
@@ -166,7 +166,7 @@ function myFunction() {
                             {% for product in products_at_min_price %}
                               <tr>
                                   <th scope="row">{{ product.id }}</th>
-                                  <td>{{ product.name }}</td>
+                                  <td><a href="{{ product.get_absolute_url }}" class="text-decoration-none">{{ product.name }}</a></td>
                                   {% if product.price %}
                                     <td>{{ product.price }}</td>
                                   {% else %}
@@ -187,16 +187,16 @@ function myFunction() {
                                   {% else %}
                                     <td></td>
                                   {% endif %}
-                                  {% if product.availability_message %}
+                                  <!-- {% if product.availability_message %}
                                     <td>{{ product.availability_message }}</td>
                                   {% else %}
-                                  <td></td>
+                                  <td></td> -->
                                   {% endif %}
-                                  <td>
+                                  <!-- <td>
                                     <a href="{{ product.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                </td>
+                                     <a href="{{ product.get_edit_url }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="{{ product.get_absolute_url }}delete/" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td> -->
                               </tr>
                           {% endfor %}
 {#                        {% else %}#}
@@ -213,7 +213,7 @@ function myFunction() {
                             {% for product in other_products %}
                               <tr>
                                   <th scope="row">{{ product.id }}</th>
-                                  <td>{{ product.name }}</td>
+                                  <td><a href="{{ product.get_absolute_url }}" class="text-decoration-none">{{ product.name }}</a></td>
                                   {% if product.price %}
                                     <td>{{ product.price }}</td>
                                   {% else %}
@@ -234,16 +234,16 @@ function myFunction() {
                                   {% else %}
                                     <td></td>
                                   {% endif %}
-                                  {% if product.availability_message %}
+                                  <!-- {% if product.availability_message %}
                                     <td>{{ product.availability_message }}</td>
                                   {% else %}
                                   <td></td>
-                                  {% endif %}
-                                  <td>
+                                  {% endif %} -->
+                                  <!-- <td>
                                     <a href="{{ product.get_absolute_url }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                </td>
+                                    <a href="{{ product.get_edit_url }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="{{ product.get_absolute_url }}delete/" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td> -->
                               </tr>
                           {% endfor %}
                         {% endif %}
