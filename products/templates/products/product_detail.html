@@ -74,33 +74,94 @@
             <p><div class="alert alert-danger" role="alert">Url not added</div></p>
         {% endif %}
         <div class="row">
-            <div class="col-6 col-md-6">
+            <div class="col-md-6 col-xs-9">
                 {% if object.availability %}
                     <div class="alert alert-success" role="alert">Available {% if object.availability_message %}- {{ object.availability_message }}{% endif %}</div>
                 {% else %}
                     <div class="alert alert-info" role="alert">Not Available {% if object.availability_message %}- {{ object.availability_message }}{% endif %}</div>
                 {% endif %}
-                <p>Website : {{ object.site }}</p>
-                <p>price : {{ object.price }}</p>
-                <p>max_price: {{ object.max_price }}</p>
-                <p>min_price : {{ object.min_price }}</p>
-                <p>target_price : {{ object.target_price }}</p>
-                <p>rating : {{ object.rating }}</p>
-                <p>ratings_count : {{ object.ratings_count }}</p>
-                <p>reviews_count : {{ object.reviews_count }}</p>
-                {% if request.user.is_superuser %}
-                    <p>User: {{ object.user }}</p>
-                {% endif %}
-
-                <p>Added Date: {{ object.created|date }}</p>
-                <p>Last Updated: {{ object.updated|timesince }} ago</p>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Website</th>
+                            <td>{{ object.site }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td>{{ object.price }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td>{{ object.price }}</td>
+                        </tr>
+                        <tr>
+                            <th>max_price</th>
+                            <td>{{ object.max_price }}</td>
+                        </tr>
+                        <tr>
+                            <th>min_price</th>
+                            <td>{{ object.min_price }}</td>
+                        </tr>
+                        <tr>
+                            <th>target_price</th>
+                            <td>{{ object.target_price }}</td>
+                        </tr>
+                        <tr>
+                            <th>rating</th>
+                            <td>{{ object.rating }}</td>
+                        </tr>
+                        <tr>
+                            <th>ratings_count</th>
+                            <td>{{ object.ratings_count }}</td>
+                        </tr>
+                        <tr>
+                            <th>reviews_count</th>
+                            <td>{{ object.reviews_count }}</td>
+                        </tr>
+                    <!-- <p>Website : {{ object.site }}</p>
+                    <p>price : {{ object.price }}</p>
+                    <p>max_price: {{ object.max_price }}</p>
+                    <p>min_price : {{ object.min_price }}</p>
+                    <p>target_price : {{ object.target_price }}</p>
+                    <p>rating : {{ object.rating }}</p>
+                    <p>ratings_count : {{ object.ratings_count }}</p>
+                    <p>reviews_count : {{ object.reviews_count }}</p> -->
+                    {% if request.user.is_superuser %}
+                    <tr>
+                        <th>User</th>
+                        <td>{{ object.user }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Added Date</th>
+                        <td>{{ object.created|date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Updated</th>
+                        <td>{{ object.updated|timesince }} ago</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="col-6 col-md-6">
+            <div class="col-md-6 col-xs-9">
                 <h1>Historic data</h1>
-                {% for phd in historic_data %}
-                    <p>{{ phd.1|date:"M-d" }} : {{ phd.0 }}</p>
-                {% empty %}
-                {% endfor %}
+                <table class="table table-bordered">
+                    <tbody>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>price</th>
+                            </tr>
+                        </thead>
+                        {% for phd in historic_data %}
+                            <tr>
+                                <th>{{ phd.1|date:"M-d" }}</th>
+                                <td>{{ phd.0 }}</td>
+                            </tr>
+                        {% empty %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

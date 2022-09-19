@@ -7,7 +7,6 @@ behave
 behave-django
 selenium
 gunicorn
-pandas
 requests
 drf-yasg
 lxml
