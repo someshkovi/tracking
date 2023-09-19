@@ -11,6 +11,8 @@ requests
 drf-yasg
 lxml
 django-crispy-forms
+crispy-bootstrap5
+django-cors-headers
 coreapi
 pyyaml
 httpx

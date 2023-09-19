@@ -17,7 +17,7 @@ class Amazon:
     def search_page_data(self, link: str) -> List[dict]:
         product_names = set()
         results = []
-        page = httpx.get(link)
+        page = httpx.get(link, verify=False)
         soup = bs(page.content, 'html.parser')
         for div in soup.findAll('div', attrs={'class': 'a-section'}):
             name = div.find('span', attrs={'class': 'a-size-medium a-color-base a-text-normal'})
@@ -59,7 +59,7 @@ def get_amazon_results_by_search(search_parameter: str, no_of_pages=2) -> dict:
     for page in range(no_of_pages):
         link = f'https://www.amazon.in/s?k={search_parameter}&page={page}'
 
-        page = httpx.get(link)
+        page = httpx.get(link, verify=False)
 
         soup = bs(page.content, 'html.parser')
 
@@ -93,7 +93,7 @@ def get_amazon_results_by_search(search_parameter: str, no_of_pages=2) -> dict:
 def get_amazon_product_info(url: str) -> dict:
     # page = requests.get(url, verify=True) ##request module cause robot verification so being faced out##
     try:
-        page = httpx.get(url)
+        page = httpx.get(url, verify=False)
     except httpx.ConnectError:
         error_msg = f'SSL certificate error for url {url}, try with verify false in code'
         return {
