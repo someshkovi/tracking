@@ -5,7 +5,8 @@ import json
 
 def get_access_token(username, password, base_url='http://localhost:8000'):
     auth_url = f"{base_url}/api/v1/users/login/"
-    auth_response = requests.post(auth_url, json={'username': username, 'password': password})
+    auth_response = requests.post(
+        auth_url, json={'username': username, 'password': password})
     access_token = auth_response.json().get('access')
     # refresh_token = auth_response.json().get('refresh')
     return access_token
@@ -24,7 +25,8 @@ def get_data(url_extension, access_token=None, headers={}, payload={}, files=Non
     if access_token is not None:
         headers['Authorization'] = f'Bearer {access_token}'
     url = f'{base_url}{url_extension}'
-    response = requests.request('GET', url, headers=headers, data=payload, files=files)
+    response = requests.request(
+        'GET', url, headers=headers, data=payload, files=files)
     return response
 
 
@@ -36,22 +38,25 @@ class RestCalls:
         self.payload = {}
         self.files = []
         self.retries = 1
+        self.username = username
+        self.password = password
 
     def verify_update_access_token(self):
         verify_url = f"{self.base_url}/api/v1/users/token-verify/"
-        response = requests.request("POST", verify_url, json={'token': self.access_token})
+        response = requests.request("POST", verify_url, json={
+                                    'token': self.access_token}, timeout=5)
         if response.status_code == 200:
             return {'status': Constants.SUCCESS}
-        elif response.status_code == 401 and self.retries > 0:
+        if response.status_code == 401 and self.retries > 0:
             self.retries -= 1
-            self.access_token = get_access_token(self.username, self.password, self.base_url)
+            self.access_token = get_access_token(
+                self.username, self.password, self.base_url)
             self.verify_update_access_token()
-        else:
-            return {
-                'status': Constants.FAILURE,
-                'error_msg': response.text,
-                'response': response
-            }
+        return {
+            'status': Constants.FAILURE,
+            'error_msg': response.text,
+            'response': response
+        }
 
 
 class ProductRestCalls(RestCalls):
@@ -92,8 +97,7 @@ class ProductRestCalls(RestCalls):
         self.payload = data
         self.update_headers_with_token(self.access_token)
         endpoint = self.base_url + self.add_product_url_ext
-        response = requests.post(endpoint, json=data, headers=self.headers)
-        return response
+        return requests.post(endpoint, json=data, headers=self.headers, timeout=5)
 
     def update_product(self, product_id, data):
         self.verify_update_access_token()
@@ -101,5 +105,4 @@ class ProductRestCalls(RestCalls):
         product_update_url = f'{self.add_product_url_ext}{product_id}/'
         endpoint = self.base_url + product_update_url
         self.update_headers_with_token(self.access_token)
-        response = requests.request("PATCH", endpoint, headers=self.headers, json=data)
-        return response
+        return requests.request("PATCH", endpoint, headers=self.headers, json=data, timeout=5)

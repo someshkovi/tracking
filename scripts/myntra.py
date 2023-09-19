@@ -1,15 +1,12 @@
-from bs4 import BeautifulSoup as bs
-import requests
 import traceback
+
 import httpx
+from bs4 import BeautifulSoup as bs
 
 # from scripts.products import Product
 
 def get_text(bs_attr, default=None):
-    if bs_attr is None:
-        return default
-    out = bs_attr.text
-    return out
+    return default if bs_attr is None else bs_attr.text
 
 def get_myntra_product_info(url):
     # product = Product()
@@ -32,7 +29,6 @@ if __name__ == '__main__':
             'https://www.myntra.com/18838824'
         )
         print(value)
-    except:
+    except Exception:
         error_msg = traceback.format_exc()
         print(error_msg)
-    pass

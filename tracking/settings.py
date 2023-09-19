@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'products',
     'accounts',
     'crispy_forms',
+    'crispy_bootstrap4',
     'rest_framework',
     'behave_django',
     'drf_yasg',

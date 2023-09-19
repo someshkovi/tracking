@@ -8,13 +8,12 @@ from scripts.products import Product
 from scripts.constants import Constants
 
 def get_text(bs_attr, default=None):
-    if bs_attr is None:
-        return default
-    out = bs_attr.text
-    return out
+    return default if bs_attr is None else bs_attr.text
 
 
-def get_flipkart_results_by_search(search_parameter, no_of_pages=2, other_params={}):
+def get_flipkart_results_by_search(search_parameter, no_of_pages=2, other_params=None):
+    if other_params is None:
+        other_params = {}
     results = []
     for page in range(no_of_pages):
         link = f'https://www.flipkart.com/search?q={search_parameter}&page={page}'
@@ -75,17 +74,16 @@ def get_flipkart_product_info(url):
         product.price = int(product.price.replace('₹', '').replace(',', ''))
     product.rating = get_text(data.find('div', attrs={'class': '_3LWZlK'}))
     if product.rating is not None:
-        rating = float(product.rating)
+        # rating = float(product.rating)
         ratings_reviews = get_text(data.find('span', attrs={'class': '_2_R_DZ'}))
         if isinstance(ratings_reviews, str):
             rtrv = unicodedata.normalize("NFKD", ratings_reviews).replace(',', '').split()
             if len(rtrv) == 5 and rtrv[1] == 'Ratings' and rtrv[4] == 'Reviews':
                 product.ratings_count = int(rtrv[0])
                 product.reviews_count = int(rtrv[3])
-    if get_text(soup.find('div', attrs={'class': '_16FRp0'})) is None:
-        product.availability = True
-    else:
-        product.availability = False
+    product.availability = (
+        get_text(soup.find('div', attrs={'class': '_16FRp0'})) is None
+    )
     if get_text(soup.find('div', attrs={'class': '_1dVbu9'})) is None:
         product.availability_message = get_text(soup.find('div', attrs={'class': '_2JC05C'}))
     else:

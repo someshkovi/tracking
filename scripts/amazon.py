@@ -35,7 +35,7 @@ class Amazon:
                     product.price = int(price.string.replace(',', ''))
                     product.rating = float(rating.string.split(' ')[0])
                     product.ratings_count = int(ratings_count.string.replace(',', ''))
-                    product.url = None if link is None else 'https://amazon.in' + link
+                    product.url = None if link is None else f'https://amazon.in{link}'
                     results.append(product.__dict__)
 
                 except Exception as exp:
@@ -50,7 +50,7 @@ class Amazon:
             thread_results = pool.imap(self.search_page_data, links)
             for result in thread_results:
                 results += result
-        return [dict(s) for s in set(frozenset(d.items()) for d in results)]
+        return [dict(s) for s in {frozenset(d.items()) for d in results}]
 
 
 def get_amazon_results_by_search(search_parameter: str, no_of_pages=2) -> dict:
@@ -79,7 +79,7 @@ def get_amazon_results_by_search(search_parameter: str, no_of_pages=2) -> dict:
                     product.price = int(price.string.replace(',', ''))
                     product.rating = float(rating.string.split(' ')[0])
                     product.ratings_count = int(ratings_count.string.replace(',', ''))
-                    product.url = None if link is None else 'https://amazon.in' + link
+                    product.url = None if link is None else f'https://amazon.in{link}'
                     results.append(product.__dict__)
                 except Exception as exp:
                     print(exp)
@@ -133,12 +133,12 @@ def get_amazon_product_info(url: str) -> dict:
         product.availability_message = soup.select(
             '#availability .a-color-success')[0].get_text().strip()
         product.availability = True
-    except:
+    except Exception:
         try:
             product.availability_message = soup.select(
                 '#availability .a-color-price')[0].get_text().strip()
             product.availability = True
-        except:
+        except Exception:
             product.availability_message = None
             product.availability = False
 
@@ -172,11 +172,11 @@ if __name__ == '__main__':
     data2 = get_amazon_results_by_search('mobile', 10)
     print(data2['data'])
     print(len(data2['data']))
-    print("--- %s seconds ---" % (time.time() - start_time))
+    print(f"--- {time.time() - start_time} seconds ---")
 
     start_time = time.time()
     data2 = Amazon().multithread_search_data('mobile', 10)
     print(data2)
     print(len(data2))
     data2.sort()
-    print("--- %s seconds ---" % (time.time() - start_time))
+    print(f"--- {time.time() - start_time} seconds ---")
